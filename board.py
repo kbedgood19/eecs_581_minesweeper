@@ -8,7 +8,7 @@ class Board:
         for row in range(self.rows):
             new_row = []
             for column in range(self.cols):
-                new_row.append("*") #using "*" as placeholder till further along in program
+                new_row.append("#") #using "*" as placeholder till further along in program
                                     #used to make sure set up of board is correct
             self.grid.append(new_row)
 
@@ -35,22 +35,40 @@ class Board:
                         if neighbor_col >= 0 and neighbor_col < self.cols:
                             neighbors.append(self.grid[neighbor_row][neighbor_col])
         return neighbors
+    def print_board(self):
+
+        #print columns
+        print("    A   B   C   D   E   F   G   H   I   J")
+        print("   +---+---+---+---+---+---+---+---+---+---+")
+
+        for row in range(self.rows):
+            #row number
+            print(str(row+1).rjust(2)+" |", end="")
+
+            for col in range(self.cols):
+                print(" " + self.grid[row][col] + " |", end="")
+            print()
+
+                # Print line between rows
+            print("   +---+---+---+---+---+---+---+---+---+---+")
 
 
+#TESTING BOARD LAYOUT BELOW
 #will be removed once main is created, used to check format and logic of grid is correct
 # board = Board()
+# board.print_board()
 
 # for row in board.grid:
 #     print(" ".join(row))
 
 #testing check_neighbor 
-board = Board()
+# board = Board()
 
-mid_neighbors = board.check_neighbor(5,5)
-print(f"Middle num of neighbors {len(mid_neighbors)}")
+# mid_neighbors = board.check_neighbor(5,5)
+# print(f"Middle num of neighbors {len(mid_neighbors)}")
 
-corner_neighbors = board.check_neighbor(0,0)
-print(f"Corner neighbors {len(corner_neighbors)}")
+# corner_neighbors = board.check_neighbor(0,0)
+# print(f"Corner neighbors {len(corner_neighbors)}")
 
-invalid_neighbors = board.check_neighbor(-1,-1)
-print(f"Invalid num of neighbors {len(invalid_neighbors)}")
+# invalid_neighbors = board.check_neighbor(-1,-1)
+# print(f"Invalid num of neighbors {len(invalid_neighbors)}")
