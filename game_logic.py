@@ -35,13 +35,55 @@ class GameLogic:
         pass
 
     def uncover_cell(self, row: int, col: int) -> None:
-        # TODO (Jaydine): Uncover cell. If adjacent_mines == 0, call recursive_reveal.
-        pass
+        #uncover the selected cell
+        #ignore coordinates outside the board
+        if row < 0 or row >= self.board.rows or col < 0 or col >= self.board.cols:
+            return
+
+        cell = self.board.get_cell(row, col)
+
+        #don't uncover flagged or already uncovered cells
+        if cell.state == 1 or cell.state == 2 or cell.state == 3:
+            return
+
+        #reveal the mine if the selected cell is a mine
+        if cell.is_mine:
+            cell.state = 3
+            return
+
+        #recursively reveal neighbors if there are no adjacent mines
+        if cell.adjacent_mines == 0:
+            self.recursive_reveal(row, col)
+        else:
+            cell.state = 2
 
     def recursive_reveal(self, row: int, col: int) -> None:
-        # TODO (Jaydine): Recursively uncover adjacent cells using the board's neighbor lookup.
-        # use the get_neighbors 
-        pass
+        #ignore coordinates outside the board
+        if row < 0 or row >= self.board.rows or col < 0 or col >= self.board.cols:
+            return
+
+        cell = self.board.get_cell(row, col)
+
+        #don't reveal flagged cells, mines, or already uncovered cells
+        if cell.state != 0 or cell.is_mine:
+            return
+
+        cell.state = 2 #uncover the cell
+
+        #stop if the cell has an adjacent mine
+        if cell.adjacent_mines != 0:
+            return
+
+        neighbors = self.board.get_neighbors(row, col) #get neighboring cells
+
+        #check each surrounding position
+        for neighbor_row in range(max(0, row - 1), min(self.board.rows, row + 2)):
+            for neighbor_col in range(max(0, col - 1), min(self.board.cols, col + 2)):
+                neighbor = self.board.get_cell(neighbor_row, neighbor_col)
+
+                #reveal the neighbor if it is in the neighbor list
+                if neighbor in neighbors:
+                    self.recursive_reveal(neighbor_row, neighbor_col)
 
     def toggle_flag(self, row: int, col: int) -> None:
         # TODO (Ximena): Toggle flag state on the cell and update total remaining flags.
