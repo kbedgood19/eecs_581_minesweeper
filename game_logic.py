@@ -31,8 +31,9 @@ class GameLogic:
     def __init__(self, board: BoardManager):
         self.board = board
         # TODO (Ximena): Initialize remaining flags based on total mines (10-20).
+        self.remaining_flags = board.num_mines
         # TODO (Ximena): Initialize game state variables (e.g., current state).
-        pass
+        self.game_state = "Playing"
 
     def uncover_cell(self, row: int, col: int) -> None:
         #uncover the selected cell
@@ -88,11 +89,50 @@ class GameLogic:
     def toggle_flag(self, row: int, col: int) -> None:
         # TODO (Ximena): Toggle flag state on the cell and update total remaining flags.
         # TODO (Ximena): Prevent uncovering if a cell is flagged.
-        pass
+        # Ignores coordinates ouside of the board.
+        if row < 0 or row >= self.board.rows or col < 0 or col >= self.board.cols:
+            return
+        
+        cell = self.board.get_cell(row, col)
+        # This doesn't allow revealed cells to be flagged.
+        if cell.state == 2 or cell.state == 3:
+            return
+        
+        # Removes an existing flag.
+        if cell.state == 1:
+            cell.state = 0
+            self.remaining_flags += 1
+
+        # Adds flag if flags are available.
+        elif cell.state == 0 and self.remaining_flags > 0:
+            cell.state = 1
+            self.remaining_flags -= 1
+        
 
     def check_game_state(self) -> str:
         # TODO (Ximena): Return exactly "Playing", "Game Over: Loss", or "Victory".
-        pass
+        # Checks for a revealed mine.
+        for row in range(self.board.rows):
+            for col in range(self.board.cols):
+                cell = self.board.get_cell(row, col)
+
+                if cell.state == 3:
+                    self.game_state = "Game Over: Loss"
+                    return self.game_state
+                
+        # Checks whether every safe cell has been revealed
+        for row in range(self.board.rows):
+            for col in range(self.board.cols):
+                cell = self.board.get_cell(row, col)
+
+                if not cell.is_mine and cell.state != 2:
+                    self.game_state = "Playing"
+                    return self.game_state
+                
+        # All safe cells have been revealed.
+        self.game_state = "Victory"
+        return self.game_state
+        
 
 """
 FIXME DELETE LATER
