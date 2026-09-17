@@ -69,7 +69,7 @@ class BoardManager:
         if num_mines < 10 or num_mines > 20:
             raise ValueError("Number of mines must be between 10 and 20.")
 
-        self.num_mines = []
+        self.num_mines = num_mines
         # (Lauren): Create a list of all board coordinates that can contain mines.
         # The first clicked cell is excluded to guarantee first-click safety.
         available_cells = []
