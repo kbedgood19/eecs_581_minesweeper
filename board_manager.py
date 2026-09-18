@@ -11,7 +11,9 @@ Outputs: Cell objects and their neighboring cells, updates board with mine
 
 Authors: Kaitlyn Bedgood, Lauren Lee
 Creation Date(s): 9/12/2026
-External Sources:
+External Sources:https://www.geeksforgeeks.org/python/python-using-2d-arrays-lists-the-right-way/
+                https://www.geeksforgeeks.org/python/multi-dimensional-lists-in-python/
+                I used these two GeeksforGeeks articles to help traverse through 2D Lists
 """
 
 import random # need for random mine placement
