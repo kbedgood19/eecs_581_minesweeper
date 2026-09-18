@@ -10,7 +10,7 @@ Outputs: Stores the cell's state, mine status, and adjacent mine count.
 
 Author: Greeshma Kunduri
 Creation Date: September 17, 2026
-External Sources:
+External Sources: ChatGPT was used to assist with understanding and implementing the Cell class based on the provided project requirements.
 """
 
 
