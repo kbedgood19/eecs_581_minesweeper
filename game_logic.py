@@ -2,24 +2,13 @@
 Module Name: game_logic.py
 Class Name: GameLogic
 
-FIXME DELETE LATER: Jaydine & Ximena, please fill out the following
+Description: This manages the game logic, such as uncovering cells, recursively revealing cells with no adjacent mines, toggling flags, tracking remaining flags, and checking status of the game.
+Inputs: board_manager. uncover_cell() and toggle_flag() take a row and column to identify the selected cell.
+Outputs: uncover_cell() and toggle_flag() update the state of the selected cells. check_game_state() returns "Playing", "Game Over: Loss", or "Victory".
 
-Description: [Describe how this manages uncover logic, flagging, and game state here]
-Inputs: [Note expected inputs, e.g., the board manager instance]
-Outputs: [Note expected outputs, e.g., game state strings]
-
-Authors: 
-Creation Date(s): 
-External Sources:
-"""
-
-"""
-FIXME DELETE LATER
-
-Remember to add in-code comments:
-- comment major code blocks and/or individual lines to explain functionality
-- indicate if code is origina, sourced, combined
-
+Authors: Ximena Bustos, Jaydine Stiles
+Creation Date(s): 09/14/26
+External Sources: https://www.askpython.com/python/examples/create-minesweeper-using-python I used this to get an idea of how the code will work.
 """
 
 from board_manager import BoardManager
@@ -30,9 +19,7 @@ class GameLogic:
     """
     def __init__(self, board: BoardManager):
         self.board = board
-        # TODO (Ximena): Initialize remaining flags based on total mines (10-20).
         self.remaining_flags = board.num_mines
-        # TODO (Ximena): Initialize game state variables (e.g., current state).
         self.game_state = "Playing"
 
     def uncover_cell(self, row: int, col: int) -> None:
@@ -87,66 +74,58 @@ class GameLogic:
                     self.recursive_reveal(neighbor_row, neighbor_col)
 
     def toggle_flag(self, row: int, col: int) -> None:
-        # TODO (Ximena): Toggle flag state on the cell and update total remaining flags.
-        # TODO (Ximena): Prevent uncovering if a cell is flagged.
+        # Checks if the row and column are inside of the board.
         # Ignores coordinates ouside of the board.
         if row < 0 or row >= self.board.rows or col < 0 or col >= self.board.cols:
             return
         
+        # Gets the cell object at the selected row and column.
         cell = self.board.get_cell(row, col)
+
         # This doesn't allow revealed cells to be flagged.
+        # 2 = revealed safe cell and 3 = revealed mine.
         if cell.state == 2 or cell.state == 3:
             return
         
-        # Removes an existing flag.
+        # Removes an existing flag, it already flagged.
+        # 1 = cell currently has a flag.
         if cell.state == 1:
             cell.state = 0
-            self.remaining_flags += 1
+            self.remaining_flags += 1       # Removing the flag gives the player one more flag.
 
-        # Adds flag if flags are available.
+        # If the cell is hiiden and there are flags available, places a flag on the cell.
+        # 0 = cell is currently hidden.
         elif cell.state == 0 and self.remaining_flags > 0:
             cell.state = 1
-            self.remaining_flags -= 1
+            self.remaining_flags -= 1       # Placed flag means using the player's available flags.
         
 
     def check_game_state(self) -> str:
-        # TODO (Ximena): Return exactly "Playing", "Game Over: Loss", or "Victory".
-        # Checks for a revealed mine.
+        # Goes through every cell on the board to check if the player 
+        # has revealed a mine.
         for row in range(self.board.rows):
             for col in range(self.board.cols):
                 cell = self.board.get_cell(row, col)
 
+                # 3 = mine had been revealed.
+                # Played has lost the game.
                 if cell.state == 3:
                     self.game_state = "Game Over: Loss"
                     return self.game_state
                 
-        # Checks whether every safe cell has been revealed
+        # If no mine has been revealed, checks whether the player
+        # has revealed every cell that is not a mine.
         for row in range(self.board.rows):
             for col in range(self.board.cols):
                 cell = self.board.get_cell(row, col)
 
+                # If the cell is not a mine and it hasn't been revealed,
+                # there are more safe cells to be uncovered.
                 if not cell.is_mine and cell.state != 2:
                     self.game_state = "Playing"
                     return self.game_state
                 
         # All safe cells have been revealed.
+        # The player has won.
         self.game_state = "Victory"
         return self.game_state
-        
-
-"""
-FIXME DELETE LATER
-
-DO NOT CHANGE:
-- FUNCTION DEFINITIONS OR RETURN TYPES
-
-- Class and Method Names: GameLogic, uncover_cell, toggle_flag, check_game_state must remain exactly the same
-- State Returns (Ximena): check_game_state must return exact status indicators ("Playing", "Game Over: Loss", and "Victory")
-- Recursive Reveal (Jaydine): recursive logic must be used to uncover adjacent cell
-- Flag Rules (Ximena): must enforce that flagged cells cannot be uncovered until they are manually unflagged
-
-WHAT CAN CHANGE:
-- Implementation code: replace pass statements with logic 
-- Win/Loss Helpers (Ximena): can add private helper methods if it makes calculating victory condition (all non-mine cells uncovered) easier
-
-"""
