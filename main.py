@@ -4,10 +4,12 @@ to the game logic.
 Inputs: Number of mines (10-20), column (A-J), row (1-10), and action (U or F).
 Outputs: Displays the 10x10 game board, game status, and final win or loss message.
 
-Author: Sabelli Antebi
+Author: Sabelli Antebi Delmas
 Creation Date: 09-13-2026
 External Sources: https://www.askpython.com/python/examples/create-minesweeper-using-python used this to help me clear some of my doubts a
 nd ideas a little better. 
+
+Basic Code Template/Outline: Marie Biernacki, Gemini
 """
 
 from game_logic import GameLogic
