@@ -8,7 +8,7 @@ Outputs: uncover_cell() and toggle_flag() update the state of the selected cells
 
 Authors: Ximena Bustos, Jaydine Stiles
 Creation Date(s): 09/14/26
-External Sources: https://www.askpython.com/python/examples/create-minesweeper-using-python I used this to get an idea of how the code will work.
+External Sources: https://www.askpython.com/python/examples/create-minesweeper-using-python, ChatGPT
 
 Basic Code Template/Outline: Marie Biernacki, Gemini
 """
@@ -24,56 +24,48 @@ class GameLogic:
         self.remaining_flags = board.num_mines
         self.game_state = "Playing"
 
+    #uncover_cell: uncover a selected cell and reveal empty neighboring cells
     def uncover_cell(self, row: int, col: int) -> None:
-        #uncover the selected cell
-        #ignore coordinates outside the board
-        if row < 0 or row >= self.board.rows or col < 0 or col >= self.board.cols:
-            return
+        if row < 0 or row >= self.board.rows or col < 0 or col >= self.board.cols: #check if the coordinates are outside the board
+            return #stop if the coordinates are invalid
 
-        cell = self.board.get_cell(row, col)
+        cell = self.board.get_cell(row, col) #get the selected cell
 
-        #don't uncover flagged or already uncovered cells
-        if cell.state == 1 or cell.state == 2 or cell.state == 3:
-            return
+        if cell.state == 1 or cell.state == 2 or cell.state == 3: #check if the cell is flagged or already uncovered
+            return #stop if the cell cannot be uncovered
 
-        #reveal the mine if the selected cell is a mine
-        if cell.is_mine:
-            cell.state = 3
-            return
+        if cell.is_mine: #check if the selected cell contains a mine
+            cell.state = 3 #reveal the mine
+            return #stop without revealing neighboring cells
 
-        #recursively reveal neighbors if there are no adjacent mines
-        if cell.adjacent_mines == 0:
-            self.recursive_reveal(row, col)
-        else:
-            cell.state = 2
+        if cell.adjacent_mines == 0: #check if the cell has no adjacent mines
+            self.recursive_reveal(row, col) #recursively uncover the cell and its neighbors
+        else: #handle cells that have adjacent mines
+            cell.state = 2 #uncover the selected cell
 
+    #recursive_reveal: recursively uncover connected empty cells and their neighbors
     def recursive_reveal(self, row: int, col: int) -> None:
-        #ignore coordinates outside the board
-        if row < 0 or row >= self.board.rows or col < 0 or col >= self.board.cols:
-            return
+        if row < 0 or row >= self.board.rows or col < 0 or col >= self.board.cols: #check if the coordinates are outside the board
+            return #stop if the coordinates are invalid
 
-        cell = self.board.get_cell(row, col)
+        cell = self.board.get_cell(row, col) #get the current cell
 
-        #don't reveal flagged cells, mines, or already uncovered cells
-        if cell.state != 0 or cell.is_mine:
-            return
+        if cell.state != 0 or cell.is_mine: #check if the cell is already uncovered, flagged, or contains a mine
+            return #stop if the cell should not be revealed
 
-        cell.state = 2 #uncover the cell
+        cell.state = 2 #uncover the current cell
 
-        #stop if the cell has an adjacent mine
-        if cell.adjacent_mines != 0:
-            return
+        if cell.adjacent_mines != 0: #check if the cell has adjacent mines
+            return #stop recursion when a numbered cell is reached
 
-        neighbors = self.board.get_neighbors(row, col) #get neighboring cells
+        neighbors = self.board.get_neighbors(row, col) #get the neighboring cells
 
-        #check each surrounding position
-        for neighbor_row in range(max(0, row - 1), min(self.board.rows, row + 2)):
-            for neighbor_col in range(max(0, col - 1), min(self.board.cols, col + 2)):
-                neighbor = self.board.get_cell(neighbor_row, neighbor_col)
+        for neighbor_row in range(max(0, row - 1), min(self.board.rows, row + 2)): #loop through the surrounding rows within the board
+            for neighbor_col in range(max(0, col - 1), min(self.board.cols, col + 2)): #loop through the surrounding columns within the board
+                neighbor = self.board.get_cell(neighbor_row, neighbor_col) #get the neighboring cell
 
-                #reveal the neighbor if it is in the neighbor list
-                if neighbor in neighbors:
-                    self.recursive_reveal(neighbor_row, neighbor_col)
+                if neighbor in neighbors: #check if the cell is in the neighbor list
+                    self.recursive_reveal(neighbor_row, neighbor_col) #recursively reveal the neighboring cell
 
     def toggle_flag(self, row: int, col: int) -> None:
         # Checks if the row and column are inside of the board.
