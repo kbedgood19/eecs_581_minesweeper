@@ -78,6 +78,9 @@ def main():
 
         print("U = uncover, F = flag") #explain the available actions
 
+        print("To remove a flag, type the corresponding cell with which you want the flag removed.\n" \
+        "EX: if there is a flag on A5, type A 5 F to remove the flag.")
+
         user_input = input("Move: ").strip().upper().split() #get the move, remove extra spaces, make uppercase, and separate values
 
         if len(user_input) != 3: #check if the user entered exactly three values
