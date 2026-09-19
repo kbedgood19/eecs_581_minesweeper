@@ -14,6 +14,8 @@ Creation Date(s): 9/12/2026
 External Sources:https://www.geeksforgeeks.org/python/python-using-2d-arrays-lists-the-right-way/
                 https://www.geeksforgeeks.org/python/multi-dimensional-lists-in-python/
                 I used these two GeeksforGeeks articles to help traverse through 2D Lists
+
+Basic Code Template/Outline: Marie Biernacki, Gemini
 """
 
 import random # need for random mine placement
@@ -65,14 +67,14 @@ class BoardManager:
 
 
     def place_mines(self, num_mines: int, first_row: int, first_col: int) -> None:
-        # TODO (Lauren): Validate num_mines is between 10-20.
-        # TODO (Lauren): Randomly place mines, ensuring (first_row, first_col) is mine-free.
-          # (Lauren): Validate that the number of mines is between 10 and 20.
+        # Validate num_mines is between 10-20.
+        # Randomly place mines, ensuring (first_row, first_col) is mine-free.
+          # Validate that the number of mines is between 10 and 20.
         if num_mines < 10 or num_mines > 20:
             raise ValueError("Number of mines must be between 10 and 20.")
 
         self.num_mines = num_mines
-        # (Lauren): Create a list of all board coordinates that can contain mines.
+        # Create a list of all board coordinates that can contain mines.
         # The first clicked cell is excluded to guarantee first-click safety.
         available_cells = []
 
@@ -81,14 +83,14 @@ class BoardManager:
                 if row != first_row or col != first_col:
                     available_cells.append((row, col))
 
-        # (Lauren): Randomly select locations for the mines.
+        # Randomly select locations for the mines.
         mine_locations = random.sample(available_cells, num_mines)
 
-        # (Lauren): Place a mine in each randomly selected cell.
+        # Place a mine in each randomly selected cell.
         for row, col in mine_locations:
             self.grid[row][col].is_mine = True
 
-        # (Lauren): Calculate the number of mines surrounding every cell.
+        # Calculate the number of mines surrounding every cell.
         for row in range(self.rows):
             for col in range(self.cols):
                 # The mine itself does not need a neighbor mine count.

@@ -9,6 +9,8 @@ Outputs: uncover_cell() and toggle_flag() update the state of the selected cells
 Authors: Ximena Bustos, Jaydine Stiles
 Creation Date(s): 09/14/26
 External Sources: https://www.askpython.com/python/examples/create-minesweeper-using-python I used this to get an idea of how the code will work.
+
+Basic Code Template/Outline: Marie Biernacki, Gemini
 """
 
 from board_manager import BoardManager
