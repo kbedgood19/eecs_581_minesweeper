@@ -34,7 +34,30 @@ class Game():
                 self.first_uncover = False
 
             cell = self.board.get_cell(row, col) #get the selected cell
-    
+
+            # If the cell is already uncovered, check if the number of adjacent flags matches the number of adjacent mines. If they match, uncover all neighboring cells.
+            if cell.state == 2:
+                if cell.adjacent_mines == 0:
+                    return
+
+                neighbors = self.board.get_neighbors(row, col)
+                num_neighbor_flags = sum(
+                    neighbor.state == 1 for neighbor in neighbors
+                )
+                if num_neighbor_flags != cell.adjacent_mines:
+                    return
+
+                for neighbor_row in range(max(0, row - 1), min(self.board.rows, row + 2)):
+                    for neighbor_col in range(max(0, col - 1), min(self.board.cols, col + 2)):
+                        if neighbor_row == row and neighbor_col == col:
+                            continue
+                        neighbor = self.board.get_cell(neighbor_row, neighbor_col)
+                        if neighbor.state == 0:
+                            self.uncover_cell(neighbor_row, neighbor_col)
+                return
+            
+        
+
             if cell.state == 1 or cell.state == 2 or cell.state == 3: #check if the cell is flagged or already uncovered
                 return #stop if the cell cannot be uncovered
     
