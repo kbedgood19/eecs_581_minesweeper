@@ -13,37 +13,70 @@ External Sources: https://www.askpython.com/python/examples/create-minesweeper-u
 Basic Code Template/Outline: Marie Biernacki, Gemini
 """
 
+from PyQt5.QtCore import QSize, Qt, QElapsedTimer
+from PyQt5.QtWidgets import QLineEdit, QMainWindow, QApplication, QPushButton
 from board_manager import BoardManager
 
-class GameLogic:
-    """
-    Tasks: Reveal Logic (Jaydine) & Flags + Win/Loss (Ximena)
-    """
-    def __init__(self, board: BoardManager):
-        self.board = board
-        self.remaining_flags = board.num_mines
+class Game():
+    def __init__(self, num_mines):
+        self.board = BoardManager()
+        self.num_mines = num_mines
+        self.remaining_flags = num_mines
         self.game_state = "Playing"
+        self.first_uncover = True
+        self.elapsed = QElapsedTimer() # timer in ms
 
-    #uncover_cell: uncover a selected cell and reveal empty neighboring cells
     def uncover_cell(self, row: int, col: int) -> None:
-        if row < 0 or row >= self.board.rows or col < 0 or col >= self.board.cols: #check if the coordinates are outside the board
-            return #stop if the coordinates are invalid
+            if row < 0 or row >= self.board.rows or col < 0 or col >= self.board.cols: #check if the coordinates are outside the board
+                return #stop if the coordinates are invalid
 
-        cell = self.board.get_cell(row, col) #get the selected cell
+            if self.first_uncover: #place mines around the first click so it is always safe
+                self.board.place_mines(self.num_mines, row, col)
+                self.first_uncover = False
+                self.start_timer()
 
-        if cell.state == 1 or cell.state == 2 or cell.state == 3: #check if the cell is flagged or already uncovered
-            return #stop if the cell cannot be uncovered
+            cell = self.board.get_cell(row, col) #get the selected cell
+    
+            if cell.state == 2: #clicking a revealed number attempts to chord
+                self.chord_cell(row, col)
+                return
 
-        if cell.is_mine: #check if the selected cell contains a mine
-            cell.state = 3 #reveal the mine
-            return #stop without revealing neighboring cells
+            if cell.state == 1 or cell.state == 3: #check if the cell is flagged or already a revealed mine
+                return #stop if the cell cannot be uncovered
+    
+            if cell.is_mine: #check if the selected cell contains a mine
+                cell.state = 3 #reveal the mine
+                return #stop without revealing neighboring cells
+    
+            if cell.adjacent_mines == 0: #check if the cell has no adjacent mines
+                self.recursive_reveal(row, col) #recursively uncover the cell and its neighbors
+            else: #handle cells that have adjacent mines
+                cell.state = 2 #uncover the selected cell
 
-        if cell.adjacent_mines == 0: #check if the cell has no adjacent mines
-            self.recursive_reveal(row, col) #recursively uncover the cell and its neighbors
-        else: #handle cells that have adjacent mines
-            cell.state = 2 #uncover the selected cell
+    def chord_cell(self, row: int, col: int) -> None:
+        cell = self.board.get_cell(row, col)
+        neighbors = self.board.get_neighbors(row, col)
+        flag_count = sum(neighbor.state == 1 for neighbor in neighbors)
 
-    #recursive_reveal: recursively uncover connected empty cells and their neighbors
+        if cell.adjacent_mines == 0 or flag_count != cell.adjacent_mines:
+            return
+
+        for neighbor_row in range(max(0, row - 1), min(self.board.rows, row + 2)):
+            for neighbor_col in range(max(0, col - 1), min(self.board.cols, col + 2)):
+                if neighbor_row == row and neighbor_col == col:
+                    continue
+
+                neighbor = self.board.get_cell(neighbor_row, neighbor_col)
+                if neighbor.state != 0:
+                    continue
+
+                if neighbor.is_mine:
+                    neighbor.state = 3
+                elif neighbor.adjacent_mines == 0:
+                    self.recursive_reveal(neighbor_row, neighbor_col)
+                else:
+                    neighbor.state = 2
+
     def recursive_reveal(self, row: int, col: int) -> None:
         if row < 0 or row >= self.board.rows or col < 0 or col >= self.board.cols: #check if the coordinates are outside the board
             return #stop if the coordinates are invalid
@@ -122,4 +155,16 @@ class GameLogic:
         # All safe cells have been revealed.
         # The player has won.
         self.game_state = "Victory"
-        return self.game_state
+        return self.game_state    
+
+    def start_timer(self):
+        self.elapsed.start()
+
+    def get_timer(self):
+        if not self.elapsed.isValid():
+            return "00:00:00"
+        
+        ms = self.elapsed.elapsed()
+        minutes, ms = divmod(ms, 60_000)
+        seconds, ms = divmod(ms, 1000)
+        return f"{minutes:02}:{seconds:02}.{ms // 10:02}"
